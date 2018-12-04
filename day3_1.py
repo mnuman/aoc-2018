@@ -1,3 +1,5 @@
+import utils
+import re
 """
 --- Day 3: No Matter How You Slice It ---
 The Elves managed to locate the chimney-squeeze prototype fabric for Santa's
@@ -56,8 +58,17 @@ The four square inches marked with X are claimed by both 1 and 2.
 If the Elves all proceed with their own plans, none of them will have
 enough fabric. How many square inches of fabric are within two or more claims?
 """
-import re
-import utils
+"""Day3, part 2:
+Amidst the chaos, you notice that exactly one claim doesn't overlap 
+by even a single square inch of fabric with any other claim. If you 
+can somehow draw attention to it, maybe the Elves will be able to make 
+Santa's suit after all!
+
+For example, in the claims above, only claim 3 is intact after all 
+claims are made.
+
+What is the ID of the only claim that doesn't overlap?
+"""
 line_regex = re.compile(r'#(\d+) @ (\d+),(\d+): (\d+)x(\d+)')
 
 
@@ -95,10 +106,30 @@ def read_file(fname):
     return utils.read_file(fname, convert=parse_instruction)
 
 
+def find_non_overlapped(array, op):
+    x0 = op[1]
+    y0 = op[2]
+    w = op[3]
+    h = op[4]
+    NonOverlapped = True
+    for i in range(x0, x0 + w):
+        for j in range(y0, y0 + h):
+            if array[j][i] != 1:
+                NonOverlapped = False
+    return NonOverlapped
+
+
 if __name__ == '__main__':
     array = initialize(2000)
     instructions = read_file('data/day3-input.txt')
     for op in instructions:
         array = fill_array(array, op[1], op[2], op[3], op[4])
-    print(find_overlaps(array))
+    # 3 - part1
+    # print(find_overlaps(array))
     # 105071
+    # day3 part 2 - revisit the array to see which entry has NO
+    # overlaps with any others, i.e. count of all entries is 1.
+    for op in instructions:
+        if find_non_overlapped(array, op):
+            print(f"Found non-overlapping entry: {op[0]} - {str(op)}")
+            break
