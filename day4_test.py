@@ -106,3 +106,43 @@ def test_mostly_in_minute():
     assert guard == '1627'  # sleepy guard
     x = day4.select_minute(data, guard)
     assert x == (22, 2)  # beautifully crafted minute 22 occurring twice
+
+
+def test_sleepiest_minute_same_guard():
+    input_data = [
+        ('1518-11-20', '23:59', '1627'),
+        ('1518-11-21', '00:22', 'S'),
+        ('1518-11-21', '00:50', 'W'),
+        ('1518-11-21', '00:15', 'S'),
+        ('1518-11-21', '00:23', 'W'),
+        ('1518-11-21', '23:57', '827'),
+        ('1518-11-23', '00:03', '743'),
+        ('1518-11-23', '00:41', 'S'),
+        ('1518-11-23', '00:42', 'W'),
+        ('1518-11-23', '00:49', 'S'),
+        ('1518-11-23', '00:52', 'W')
+    ]
+    data = day4.parse_data(input_data)
+    x = day4.sleepiest_minute_same_guard(data)
+    assert x['1627'][22] == 2
+
+
+def test_find_sleepiest_minute():
+    input_data = [
+        ('1518-11-20', '23:59', '1627'),
+        ('1518-11-21', '00:22', 'S'),
+        ('1518-11-21', '00:50', 'W'),
+        ('1518-11-21', '00:15', 'S'),
+        ('1518-11-21', '00:23', 'W'),
+        ('1518-11-21', '23:57', '827'),
+        ('1518-11-23', '00:03', '743'),
+        ('1518-11-23', '00:41', 'S'),
+        ('1518-11-23', '00:42', 'W'),
+        ('1518-11-23', '00:49', 'S'),
+        ('1518-11-23', '00:52', 'W')
+    ]
+    data = day4.parse_data(input_data)
+    x = day4.find_sleepiest_minute(day4.sleepiest_minute_same_guard(data))
+    assert x[0] == '1627'
+    assert x[1] == 22
+    assert x[2] == 2

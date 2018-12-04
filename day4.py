@@ -171,9 +171,42 @@ def select_minute(data, guard):
     return maxmin, maxval
 
 
+def sleepiest_minute_same_guard(data):
+    sleepiest = {}
+    for guard in data:
+        sleepiest_minute = [0]*60
+        for sleep_section in data[guard]:
+            for i in range(0, 60):
+                if sleep_section[i] == '#':
+                    sleepiest_minute[i] += 1
+        sleepiest[guard] = sleepiest_minute
+    # oops ... indented this one level too much to give the wrong answer!
+    return sleepiest
+
+
+def find_sleepiest_minute(sleep_dict):
+    g = None
+    m = 0
+    v = 0
+    for guard in sleep_dict:
+        for minute in range(0, 60):
+            if sleep_dict[guard][minute] >= v:
+                v = sleep_dict[guard][minute]
+                g = guard
+                m = minute
+    return (g, m, v)
+
+
 if __name__ == '__main__':
     raw_data = prepare_data('data/day4-input.txt')
     data = parse_data(raw_data)
+    sleepiest = sleepiest_minute_same_guard(data)
+    # print(sleepiest['3557'])
+    # print(data['3557'])
+    g, m, v = find_sleepiest_minute(sleepiest)
+    # Guard 1901 spent minutes 47 most times asleep: 19 - answer = 89347
+    print(
+        f'Guard {g} spent minutes {m} most times asleep: {v} - answer = {int(g)*m}')
     # sleepiest_guard = select_most_minutes(data)
     # maxmin, maxval = select_minute(data, sleepiest_guard)
     # print(
