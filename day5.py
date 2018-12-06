@@ -106,7 +106,7 @@ def day5_2():
         if len(r) < minlen:
             minlen = len(r)
             minunit = unit
-    print(f'Min length {minlen} for unit {minunit}')
+    # print(f'Min length {minlen} for unit {minunit}')
 
 
 if __name__ == '__main__':
