@@ -1,10 +1,20 @@
 """
 --- Day 10: The Stars Align ---
-It's no use; your navigation system simply isn't capable of providing walking directions in the arctic circle, and certainly not in 1018.
+It's no use; your navigation system simply isn't capable of providing walking 
+directions in the arctic circle, and certainly not in 1018.
 
-The Elves suggest an alternative. In times like these, North Pole rescue operations will arrange points of light in the sky to guide missing Elves back to base. Unfortunately, the message is easy to miss: the points move slowly enough that it takes hours to align them, but have so much momentum that they only stay aligned for a second. If you blink at the wrong time, it might be hours before another message appears.
+The Elves suggest an alternative. In times like these, North Pole rescue operations 
+will arrange points of light in the sky to guide missing Elves back to base. 
+Unfortunately, the message is easy to miss: the points move slowly enough that 
+it takes hours to align them, but have so much momentum that they only stay aligned 
+for a second. If you blink at the wrong time, it might be hours before another 
+message appears.
 
-You can see these points of light floating in the distance, and record their position in the sky and their velocity, the relative change in position per second (your puzzle input). The coordinates are all given from your perspective; given enough time, those positions and velocities will move the points into a cohesive message!
+You can see these points of light floating in the distance, and record their 
+position in the sky and their velocity, the relative change in position per 
+second (your puzzle input). The coordinates are all given from your perspective; 
+given enough time, those positions and velocities will move the points into 
+a cohesive message!
 
 Rather than wait, you decide to fast-forward the process and calculate what the points will eventually spell.
 
@@ -41,9 +51,16 @@ position=<-6,  0> velocity=< 2,  0>
 position=< 5,  9> velocity=< 1, -2>
 position=<14,  7> velocity=<-2,  0>
 position=<-3,  6> velocity=< 2, -1>
-Each line represents one point. Positions are given as <X, Y> pairs: X represents how far left (negative) or right (positive) the point appears, while Y represents how far up (negative) or down (positive) the point appears.
 
-At 0 seconds, each point has the position given. Each second, each point's velocity is added to its position. So, a point with velocity <1, -2> is moving to the right, but is moving upward twice as quickly. If this point's initial position were <3, 9>, after 3 seconds, its position would become <6, 3>.
+Each line represents one point. Positions are given as <X, Y> pairs: 
+X represents how far left (negative) or right (positive) the point appears, 
+while Y represents how far up (negative) or down (positive) the point a
+ppears.
+
+At 0 seconds, each point has the position given. Each second, each point's 
+velocity is added to its position. So, a point with velocity <1, -2> 
+is moving to the right, but is moving upward twice as quickly. If this point's 
+initial position were <3, 9>, after 3 seconds, its position would become <6, 3>.
 
 Over time, the points listed above would move like this:
 
@@ -136,7 +153,58 @@ After 4 seconds:
 ...............#......
 ......................
 ......................
-After 3 seconds, the message appeared briefly: HI. Of course, your message will be much longer and will take many more seconds to appear.
+After 3 seconds, the message appeared briefly: HI. Of course, 
+your message will be much longer and will take many more seconds 
+to appear.
 
 What message will eventually appear in the sky?
 """
+import re
+lineparser = re.compile(
+    r'position=<\s*(-?\d+),\s*(-?\d+)>\s*velocity=<\s*(-?\d+),\s*(-?\d+)>')
+
+
+def readfile(fname):
+    """Read the datafile and return a list containing
+       the list (X,Y,dX,dY)
+    """
+    points = []
+    with open(fname, 'r') as file:
+        all_lines = file.readlines()
+    for line in all_lines:
+        m = lineparser.match(line.strip())
+        if m is not None:
+            g = m.groups()
+            points.append([int(g[0]), int(g[1]),
+                           int(g[2]), int(g[3])])
+    return points
+
+
+def move(points, steps=1):
+    """Process all points in the array, i.e.
+       move their current positions <steps> seconds ahead
+       """
+    for p in points:
+        p[0] += steps * p[2]
+        p[1] += steps * p[3]
+
+
+def display(points):
+    """Let's assume a 20x20 grid"""
+    # X,Y : -X left, +X right
+    #       -Y up,   +Y down
+    grid = [['.' for _ in range(20)] for _ in range(20)]
+    for p in points:
+        x, y = p[0:2]
+        grid[y][x] = '*'
+    display = []
+    for line in grid:
+        display.append(''.join(line))
+    for l in display:
+        print(l)
+    return display
+
+
+points = readfile('data/day10-test.txt')
+move(points, 3)
+display(points)
