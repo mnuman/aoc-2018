@@ -1,6 +1,6 @@
 """
-You talk to the Elves while you wait for your navigation system to initialize. T
-o pass the time, they introduce you to their favorite marble game.
+You talk to the Elves while you wait for your navigation system to initialize.
+To pass the time, they introduce you to their favorite marble game.
 
 The Elves play this game by taking turns arranging the marbles in a circle according to very particular rules.
 The marbles are numbered starting with 0 and increasing by 1 until every marble has a number.
@@ -20,7 +20,10 @@ have placed, adding it to their score. In addition, the marble 7 marbles counter
 from the current marble is removed from the circle and also added to the current player's score.
 The marble located immediately clockwise of the marble that was removed becomes the new current marble.
 
-For example, suppose there are 9 players. After the marble with value 0 is placed in the middle, each player (shown in square brackets) takes a turn. The result of each of those turns would produce circles of marbles like this, where clockwise is to the right and the resulting current marble is in parentheses:
+For example, suppose there are 9 players. After the marble with value 0 is placed in the middle, 
+each player (shown in square brackets) takes a turn. The result of each of those turns would 
+produce circles of marbles like this, where clockwise is to the right and the resulting current 
+marble is in parentheses:
 
 [-] (0)                         current_pos = 0
 [1]  0 (1)                      len=1, insert_pos = 1, current_pos <-- 1
@@ -62,7 +65,7 @@ What is the winning Elf's score?
 
 
 class Game:
-    """Represent the Elves'  marble game. Counterclockwise means shift to right
+    """Represent the Elves'  marble game. Clockwise means shift to right
        in the list for this implementation!
     """
 
@@ -78,22 +81,34 @@ class Game:
     def insert_pos(self):
         return (self.position + 1) % len(self.sequence) + 1
 
+    def max_score(self):
+        return max([self.players[i] for i in range(self.number_of_players)])
+
     def play(self):
         if self.current_marble % 23 != 0:
             i = self.insert_pos()
             self.sequence.insert(i, self.current_marble)
             self.position = i
         else:
-            pass  # special logic
+            # 1. the marble is not placed but added to the current score of the player
+            # 2. marble 7 marbles counter-clockwise from the current marble is removed from the circle and also added to the current player's score.
+            delete_position = (self.position - 7) % len(self.sequence)
+            self.players[self.player] += self.current_marble + \
+                self.sequence.pop(delete_position)
+            # 3. The marble located immediately clockwise of the marble that was removed becomes the new current marble.
+            self.position = delete_position % len(self.sequence)
         self.player = (self.player + 1) % self.number_of_players
         self.current_marble += 1
 
 
-def day9():
-    g = Game(9, 10)
-    for i in range(11):
+def day9(players, max_marble):
+    g = Game(players, max_marble)
+    for _ in range(max_marble+1):
         g.play()
-        print(g.sequence)
+    return g.max_score()
 
 
-day9()
+if __name__ == '__main__':
+    # print(day9(426, 72058))
+    # 426 players; last marble is worth 72058 points --> 424112
+    print(day9(426, 7205800))
