@@ -62,6 +62,8 @@ Here are a few more examples:
 30 players; last marble is worth 5807 points: high score is 37305
 What is the winning Elf's score?
 """
+from blist import blist
+import datetime
 
 
 class Game:
@@ -72,11 +74,13 @@ class Game:
     def __init__(self, number_of_players, last_marble):
         self.position = 0
         self.number_of_players = number_of_players
-        self.sequence = [0]
+        # switch implementation to a BLIST for better performance
+        self.sequence = blist([0])
         self.players = [0] * number_of_players
         self.player = 0
         self.last_marble = last_marble
         self.current_marble = 1
+        self.counter = 0
 
     def insert_pos(self):
         return (self.position + 1) % len(self.sequence) + 1
@@ -85,6 +89,7 @@ class Game:
         return max([self.players[i] for i in range(self.number_of_players)])
 
     def play(self):
+        self.counter += 1
         if self.current_marble % 23 != 0:
             i = self.insert_pos()
             self.sequence.insert(i, self.current_marble)
@@ -98,6 +103,10 @@ class Game:
             # 3. The marble located immediately clockwise of the marble that was removed becomes the new current marble.
             self.position = delete_position % len(self.sequence)
         self.player = (self.player + 1) % self.number_of_players
+        if self.counter == 100000:
+            print(
+                f'{datetime.datetime.now().time()} - current marble {self.current_marble}')
+            self.counter = 0
         self.current_marble += 1
 
 
