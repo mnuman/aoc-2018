@@ -189,22 +189,47 @@ def move(points, steps=1):
         p[1] += steps * p[3]
 
 
-def display(points):
+def viewport(points, gridsize=20, xoffset=0, yoffset=0):
     """Let's assume a 20x20 grid"""
     # X,Y : -X left, +X right
     #       -Y up,   +Y down
-    grid = [['.' for _ in range(20)] for _ in range(20)]
+    grid = [[' ' for _ in range(gridsize)] for _ in range(gridsize)]
     for p in points:
         x, y = p[0:2]
-        grid[y][x] = '*'
+        if xoffset <= x < xoffset+gridsize and yoffset <= y <= yoffset+gridsize:
+            # only draw point in the viewport
+            grid[y-yoffset][x-xoffset] = '*'
     display = []
     for line in grid:
         display.append(''.join(line))
-    for l in display:
-        print(l)
     return display
 
 
-points = readfile('data/day10-test.txt')
-move(points, 3)
-display(points)
+def show_viewport(points):
+    for l in points:
+        print(''.join(l))
+
+
+def day10():
+    points = readfile('data/day10-input.txt')
+    # points must converge somehwere ...
+    # for _ in range(0, 20000):
+    #     for p in points:
+    #         p[0] += p[2]
+    #         p[1] += p[3]
+    #     max_x = max([p[0] for p in points])
+    #     min_x = min([p[0] for p in points])
+    #     max_y = max([p[1] for p in points])
+    #     min_y = min([p[0] for p in points])
+    #     print(f'{max_x-min_x+max_y-min_y} at {_}')
+    # minimum area @ 10123
+    move(points, 10123)
+    for _ in range(100):
+        move(points)
+        qshow_viewport(viewport(points, 200, 140, 100))
+
+
+if __name__ == '__main__':
+    day10()
+    # part1 : XECXBPZB
+    # part2: 10124 seconds they needed to wait !

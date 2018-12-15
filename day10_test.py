@@ -22,4 +22,7 @@ def test_move_multiple():
 def test_display():
     points = day10.readfile('data/day10-test.txt')
     day10.move(points, 3)
-    day10.display(points)
+    viewport = day10.viewport(points)
+    print(viewport)
+    assert viewport == ['*   *  ***          ', '*   *   *           ', '*   *   *           ', '*****   *           ', '*   *   *           ', '*   *   *           ', '*   *   *           ', '*   *  ***          ', '                    ', '                    ',
+                        '                    ', '                    ', '                    ', '                    ', '                    ', '                    ', '                    ', '                    ', '                    ', '                    ']
