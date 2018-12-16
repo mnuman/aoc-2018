@@ -33,9 +33,12 @@ Here are some more example power levels:
 Fuel cell at  122,79, grid serial number 57: power level -5.
 Fuel cell at 217,196, grid serial number 39: power level  0.
 Fuel cell at 101,153, grid serial number 71: power level  4.
-Your goal is to find the 3x3 square which has the largest total power. The square must be entirely within the 300x300 grid. Identify this square using the X,Y coordinate of its top-left fuel cell. For example:
+Your goal is to find the 3x3 square which has the largest total power. The square must
+be entirely within the 300x300 grid. Identify this square using the X,Y coordinate
+of its top-left fuel cell. For example:
 
-For grid serial number 18, the largest total 3x3 square has a top-left corner of 33,45 (with a total power of 29); these fuel cells appear in the middle of this 5x5 region:
+For grid serial number 18, the largest total 3x3 square has a top-left corner of 33,45 (with a total power of 29);
+these fuel cells appear in the middle of this 5x5 region:
 
 -2  -4   4   4   4
 -4   4   4   4  -5
@@ -53,3 +56,79 @@ What is the X,Y coordinate of the top-left fuel cell of the 3x3 square with the 
 
 Your puzzle input is 5535.
 """
+
+
+def power_level(x, y, serialNumber):
+    """Perform the power level calculation"""
+    rackID = x + 10
+    pwr = ((rackID * y + serialNumber) * rackID) // 100
+    return int(str(pwr)[-1]) - 5
+
+
+def calc_grid(size, serialNumber=5535):
+    """Calculate an entire grid of give size for a specific serial number and return this as
+       a dictionary with key (x,y) and power_level as the value.
+       """
+    grid = {}
+    for x in range(1, size+1):
+        for y in range(1, size+1):
+            grid[(x, y)] = power_level(x, y, serialNumber)
+    return grid
+
+
+def search_grid(grid, gridsize=300, subgridsize=3):
+    """Dumb brute force calculation of the grid's size x size subsquares returning the maximum value's coordinates"""
+    maxval = -99999
+    maxtuple = ()
+    for x in range(1, gridsize - subgridsize + 1):
+        for y in range(1, gridsize - subgridsize + 1):
+            val = sum([grid[(x+ix, y+iy)] for ix in range(subgridsize)
+                       for iy in range(subgridsize)])
+            if val > maxval:
+                maxval = val
+                maxtuple = (x, y)
+    return maxtuple
+
+
+def search_grid_variable(grid, gridsize=300):
+    """Dumb brute force calculation of the grid's size x size subsquares returning the maximum value's coordinates"""
+    maxval = -99999
+    maxtuple = ()
+    maxsubgridsize = 0
+    for subgridsize in range(1, gridsize+1):
+        for x in range(1, gridsize - subgridsize + 1):
+            for y in range(1, gridsize - subgridsize + 1):
+                val = sum([grid[(x+ix, y+iy)] for ix in range(subgridsize)
+                           for iy in range(subgridsize)])
+                if val > maxval:
+                    maxval = val
+                    maxsubgridsize = subgridsize
+                    maxtuple = (x, y)
+                    print(f'maxed - {maxtuple}, {maxsubgridsize}, {maxval}')
+        print(f'-- completed pass subgridsize: {subgridsize}')
+    return maxtuple, maxsubgridsize, maxval
+
+
+def day11_1():
+    print(search_grid(calc_grid(300)))
+
+
+def day11_2():
+    print(search_grid_variable(calc_grid(300)))
+
+
+"""
+--- Part Two ---
+You discover a dial on the side of the device; it seems to let you select a square of any size, not just 3x3. Sizes from 1x1 to 300x300 are supported.
+
+Realizing this, you now must find the square of any size with the largest total power. Identify this square by including its size as a third parameter after the top-left coordinate: a 9x9 square with a top-left corner of 3,5 is identified as 3,5,9.
+
+For example:
+
+For grid serial number 18, the largest total square (with a total power of 113) is 16x16 and has a top-left corner of 90,269, so its identifier is 90,269,16.
+For grid serial number 42, the largest total square (with a total power of 119) is 12x12 and has a top-left corner of 232,251, so its identifier is 232,251,12.
+"""
+if __name__ == '__main__':
+    # day11_1() # (10,41)
+    day11_2()
+    # 237, 284, 11
