@@ -97,9 +97,12 @@ def cycle(initial_state, rules, cycles):
        For generation, need to prefix and postfix the state with some
        blanks.
        """
+    all_states = [initial_state]
+    c = 0
     state = initial_state  # start with initial state
     leftpot = 0
     while cycles > 0:
+        c += 1
         # augment state with some empty pots on either side
         state = '.......' + state + '.......'
         leftpot -= 7
@@ -119,6 +122,13 @@ def cycle(initial_state, rules, cycles):
             # since we're not considering the first two positions!
             leftpot += len(m.groups()[0]) + 2
         state = state.lstrip('.').rstrip('.')
+        if state not in all_states:
+            all_states.append(state)
+        else:
+            print(
+                f'Encountered initial state at cycles: {cycles} with # states: {len(all_states)} and leftpot: {leftpot}, c = {c}')
+            print(all_states.index(state))
+            print(leftpot), print(state), print(len(state))
     # print(leftpot)
     return (state, leftpot)
 
@@ -134,5 +144,26 @@ def day12():
     print(calc_pot_score(new_state, leftpot))
 
 
+def day12_2():
+    (s, g) = readfile('data/day12-input.txt')
+    new_state, leftpot = cycle(initial_state=s, rules=g, cycles=1000)
+    print(calc_pot_score(new_state, leftpot))
+
+
 # day12()
 # 4200
+""" --- Part Two ---
+You realize that 20 generations aren't enough. After all, these plants 
+will need to last another 1500 years to even reach your timeline, not 
+to mention your future.
+
+After fifty billion (50000000000) generations, what is the sum of the 
+numbers of all pots which contain a plant?
+"""
+# day12_2()
+# generation will reach a steady state after generating 185 states (so there are 186 distinct states)
+# the state is all '#' (length = 194).
+# after 1000 cycles of generation: leftpot = 900.
+# hence after 50,000,000,000 cycles, leftpot = 49,999,999,900 and state is still '#'*194
+print(calc_pot_score('#'*194, 49999999900))
+# 9699999999321
