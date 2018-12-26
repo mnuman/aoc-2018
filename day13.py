@@ -82,6 +82,26 @@ class Track():
                 break
         self.ticks += 1
 
+    def tick_remove_collided(self):
+        """Move all carts one step ahead, plus set their new direction after completing
+           the step for the cart.
+           After each tick, remove all the carts that have collided.
+           """
+        collided = []
+        for cart in self.order_carts():
+            if cart not in collided:
+                # 1. move the cart
+                cart.move()
+                # 2. adjust its direction based on its new position
+                cart.change_direction(self.track[cart.row][cart.col])
+                for c in self.collision():
+                    collided.append(c)
+        # remove all collided carts from the track
+        for collided_cart in collided:
+            if collided_cart in self.carts:
+                self.carts.remove(collided_cart)
+        self.ticks += 1
+
     def collision(self):
         """Return the collided carts or an empty list if there are no collisions ..."""
         return [c1 for i, c1 in enumerate(self.carts) for j, c2 in enumerate(self.carts) if i != j and c1.row == c2.row and c1.col == c2.col]
@@ -123,8 +143,17 @@ def day13(fname, maxiter=200):
     return track.collision()
 
 
-collisions = day13('data/day13-input.txt', maxiter=20000)
-print(f'Collided at x=col:{collisions[0].col} and y=row:{collisions[0].row}')
-for i in range(len(collisions)):
-    print(collisions[i])
-# row-130,col=124 - collisions can also occur DURING the tick!
+def day13_2(fname, maxiter=20000):
+    lines, carts = readfile(fname)
+    track = Track(lines, carts)
+    iter = 0
+    while iter < maxiter and len(carts) > 1:
+        track.tick_remove_collided()
+        iter += 1
+    return carts
+
+
+carts = day13_2('data/day13-input.txt', maxiter=20000)
+print(
+    f'Last cart standing ... at x:col = {carts[0].col} and y:row = {carts[0].row}')
+# x:col = 143, y:row = 123

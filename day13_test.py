@@ -187,3 +187,9 @@ def test_day13():
     assert collided[1].row == 3 and collided[1].col == 7
     # but carts are heading in different directions ...
     assert collided[0].moverow != collided[1].moverow or collided[0].movecol != collided[1].movecol
+
+
+def test_day_13_2():
+    carts = day13.day13_2('data/day13-2-test.txt')
+    assert len(carts) == 1
+    assert carts[0].row == 4 and carts[0].col == 6
